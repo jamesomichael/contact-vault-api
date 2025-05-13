@@ -17,7 +17,7 @@ const register = async (req: Request, res: Response) => {
 	try {
 		if (await userExists(email)) {
 			console.log('[authController: register]: User already exists.');
-			return res.status(400).json({ message: 'User already exists.' });
+			return res.status(409).json({ message: 'User already exists.' });
 		}
 
 		const hashedPassword = await generateHashedPassword(password);
