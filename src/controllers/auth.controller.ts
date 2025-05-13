@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express';
 
 import User from '../db/models/User';
 import {
@@ -8,7 +8,7 @@ import {
 	logInUser,
 } from '../models/auth.model';
 
-const register = async (req: Request, res: Response) => {
+const register: RequestHandler = async (req, res): Promise<void> => {
 	const { email, name, password } = req.body;
 	console.log(
 		`[authController: register] Attempting to register user ${email}...`
@@ -17,7 +17,8 @@ const register = async (req: Request, res: Response) => {
 	try {
 		if (await userExists(email)) {
 			console.log('[authController: register]: User already exists.');
-			return res.status(409).json({ message: 'User already exists.' });
+			res.status(409).json({ message: 'User already exists.' });
+			return;
 		}
 
 		const hashedPassword = await generateHashedPassword(password);
@@ -38,7 +39,7 @@ const register = async (req: Request, res: Response) => {
 	}
 };
 
-const login = async (req: Request, res: Response) => {
+const login: RequestHandler = async (req, res): Promise<void> => {
 	const { email, password } = req.body;
 	console.log(
 		`[authController: login] Attempting to log in user ${email}...`
@@ -50,9 +51,11 @@ const login = async (req: Request, res: Response) => {
 			user = await logInUser(email, password);
 		} catch (error: any) {
 			if (/Invalid credentials/.test(error.message)) {
-				return res.status(401).json({ message: error.message });
+				res.status(401).json({ message: error.message });
+				return;
 			}
-			return res.status(500).json({ message: 'Something went wrong.' });
+			res.status(500).json({ message: 'Something went wrong.' });
+			return;
 		}
 
 		const token = getToken(user.id);

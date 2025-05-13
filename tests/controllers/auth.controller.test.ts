@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import authController from '../../src/controllers/auth.controller';
 import User from '../../src/db/models/User';
 import * as authModel from '../../src/models/auth.model';
@@ -9,6 +9,7 @@ jest.mock('../../src/db/models/User');
 describe('auth.controller', () => {
 	let req: Partial<Request>;
 	let res: Partial<Response>;
+	let next: Partial<NextFunction>;
 	let statusMock: jest.Mock;
 	let jsonMock: jest.Mock;
 
@@ -21,6 +22,7 @@ describe('auth.controller', () => {
 			status: statusMock,
 			json: jsonMock,
 		};
+		next = jest.fn();
 	});
 
 	describe('Register', () => {
@@ -45,7 +47,11 @@ describe('auth.controller', () => {
 				password: 'password',
 			};
 
-			await authController.register(req as Request, res as Response);
+			await authController.register(
+				req as Request,
+				res as Response,
+				next as NextFunction
+			);
 
 			expect(saveMock).toHaveBeenCalled();
 			expect(statusMock).toHaveBeenCalledWith(200);
@@ -67,7 +73,11 @@ describe('auth.controller', () => {
 				password: 'password',
 			};
 
-			await authController.register(req as Request, res as Response);
+			await authController.register(
+				req as Request,
+				res as Response,
+				next as NextFunction
+			);
 
 			expect(statusMock).toHaveBeenCalledWith(409);
 			expect(jsonMock).toHaveBeenCalledWith({
@@ -95,7 +105,11 @@ describe('auth.controller', () => {
 				password: 'password',
 			};
 
-			await authController.register(req as Request, res as Response);
+			await authController.register(
+				req as Request,
+				res as Response,
+				next as NextFunction
+			);
 
 			expect(saveMock).not.toHaveBeenCalled();
 			expect(statusMock).toHaveBeenCalledWith(500);
@@ -118,7 +132,11 @@ describe('auth.controller', () => {
 
 				req.body = { email: 'test@example.com', password: 'password' };
 
-				await authController.login(req as Request, res as Response);
+				await authController.login(
+					req as Request,
+					res as Response,
+					next as NextFunction
+				);
 
 				expect(statusMock).toHaveBeenCalledWith(200);
 				expect(jsonMock).toHaveBeenCalledWith({
@@ -137,7 +155,11 @@ describe('auth.controller', () => {
 					password: 'definitely-not-the-correct-password',
 				};
 
-				await authController.login(req as Request, res as Response);
+				await authController.login(
+					req as Request,
+					res as Response,
+					next as NextFunction
+				);
 
 				expect(statusMock).toHaveBeenCalledWith(401);
 				expect(jsonMock).toHaveBeenCalledWith({
@@ -155,7 +177,11 @@ describe('auth.controller', () => {
 					password: 'password',
 				};
 
-				await authController.login(req as Request, res as Response);
+				await authController.login(
+					req as Request,
+					res as Response,
+					next as NextFunction
+				);
 
 				expect(statusMock).toHaveBeenCalledWith(500);
 				expect(jsonMock).toHaveBeenCalledWith({
@@ -176,7 +202,11 @@ describe('auth.controller', () => {
 
 				req.body = { email: 'test@example.com', password: 'password' };
 
-				await authController.login(req as Request, res as Response);
+				await authController.login(
+					req as Request,
+					res as Response,
+					next as NextFunction
+				);
 
 				expect(statusMock).toHaveBeenCalledWith(500);
 				expect(jsonMock).toHaveBeenCalledWith({
