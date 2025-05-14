@@ -11,6 +11,7 @@ if (NODE_ENV !== 'production') {
 const PORT = process.env.PORT || 3000;
 
 import authRoutes from './routes/auth.route';
+import contactsRoutes from './routes/contacts.route';
 import database from './db';
 
 database.connect();
@@ -19,6 +20,7 @@ const app = express();
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/contacts', contactsRoutes);
 
 app.use(errors());
 
