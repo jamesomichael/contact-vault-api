@@ -1,19 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
-import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
+import jwt, { TokenExpiredError } from 'jsonwebtoken';
+
+import { AuthorisedRequest, TokenPayload } from './types/auth';
 
 const JWT_SECRET: string = process.env.JWT_SECRET!;
-
-interface TokenPayload extends JwtPayload {
-	user: {
-		id: string;
-	};
-}
-
-interface AuthorisedRequest extends Request {
-	user: {
-		id: string;
-	};
-}
 
 const auth: RequestHandler = async (
 	req: Request,
