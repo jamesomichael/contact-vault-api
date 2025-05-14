@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const ContactSchema = new mongoose.Schema({
-	user: {
+	userId: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'users',
 	},
@@ -12,7 +12,7 @@ const ContactSchema = new mongoose.Schema({
 	email: {
 		type: String,
 	},
-	phone: {
+	phoneNumber: {
 		type: String,
 	},
 	type: {
