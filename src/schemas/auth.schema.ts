@@ -4,7 +4,7 @@ const register = {
 	body: Joi.object()
 		.keys({
 			name: Joi.string().required().messages({
-				'string.name': 'Name is required.',
+				'any.required': 'Name is required.',
 			}),
 			email: Joi.string().email().required().messages({
 				'string.email': 'Invalid email format',
