@@ -9,6 +9,7 @@ tags:
     - name: Auth
       description: User authentication.
     - name: Contacts
+      description: Manage your contacts.
 paths:
     /api/auth/register:
         post:
@@ -76,7 +77,202 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ServerErrorResponse'
+    /api/contacts:
+        get:
+            security:
+                - BearerAuth: []
+            tags:
+                - Contacts
+            summary: Fetch all contacts.
+            description: Fetch all contacts for a user.
+            operationId: fetchContacts
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContactsResponse'
+                '401':
+                    description: Missing or expired bearer token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorisedResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+        post:
+            security:
+                - BearerAuth: []
+            tags:
+                - Contacts
+            summary: Create a new contact.
+            description: Add a new contact.
+            operationId: createContact
+            requestBody:
+                description: Add a new contact.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateContact'
+                required: true
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContactResponse'
+                '401':
+                    description: Missing or expired bearer token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorisedResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+    /api/contacts/{contactId}:
+        parameters:
+            - name: contactId
+              in: path
+              required: true
+              description: The contact ID.
+              schema:
+                  type: string
+        get:
+            security:
+                - BearerAuth: []
+            tags:
+                - Contacts
+            summary: Fetch a contact.
+            description: Fetch a contact by its ID.
+            operationId: fetchContactById
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContactResponse'
+                '400':
+                    description: Invalid contact ID
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InvalidContactIDResponse'
+                '401':
+                    description: Missing or expired bearer token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorisedResponse'
+                '404':
+                    description: Contact not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContactNotFoundResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+        patch:
+            security:
+                - BearerAuth: []
+            tags:
+                - Contacts
+            summary: Update a contact.
+            description: Update an existing contact.
+            operationId: updateContact
+            requestBody:
+                description: Update a contact.
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateContact'
+                required: true
+            responses:
+                '200':
+                    description: Successful operation
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContactResponse'
+                '400':
+                    description: Invalid contact ID
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InvalidContactIDResponse'
+                '401':
+                    description: Missing or expired bearer token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorisedResponse'
+                '404':
+                    description: Contact not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContactNotFoundResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
+        delete:
+            security:
+                - BearerAuth: []
+            tags:
+                - Contacts
+            summary: Delete a contact.
+            description: Delete a contact.
+            operationId: deleteContact
+            responses:
+                '204':
+                    description: Successful operation
+                '400':
+                    description: Invalid contact ID
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InvalidContactIDResponse'
+                '401':
+                    description: Missing or expired bearer token
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UnauthorisedResponse'
+                '404':
+                    description: Contact not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ContactNotFoundResponse'
+                '500':
+                    description: Server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ServerErrorResponse'
 components:
+    securitySchemes:
+        BearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
     schemas:
         RegisterUser:
             type: object
@@ -135,12 +331,103 @@ components:
                 message:
                     type: string
                     example: 'User already exists.'
+        CreateContact:
+            type: object
+            required:
+                - name
+            properties:
+                name:
+                    type: string
+                email:
+                    type: string
+                    format: email
+                    example: 'john.doe@example.com'
+                phoneNumber:
+                    type: string
+                    pattern: '^\+?\d+$'
+                    example: '+441234567890'
+                type:
+                    type: string
+                    enum:
+                        - personal
+                        - business
+                    default: personal
+        UpdateContact:
+            type: object
+            properties:
+                name:
+                    type: string
+                email:
+                    type: string
+                    format: email
+                    example: 'john.doe@example.com'
+                phoneNumber:
+                    type: string
+                    pattern: '^\+?\d+$'
+                    example: '+441234567890'
+                type:
+                    type: string
+                    enum:
+                        - personal
+                        - business
+                    default: personal
+        ContactResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: '1212a111d00a00a000b00c00'
+                name:
+                    type: string
+                    example: 'John Doe'
+                email:
+                    type: string
+                    format: email
+                    example: 'john.doe@example.com'
+                phoneNumber:
+                    type: string
+                    pattern: '^\+?\d+$'
+                    example: '+441234567890'
+                type:
+                    type: string
+                    example: 'personal'
+                createdAt:
+                    type: 'number'
+                    example: 1747314188009
+                updatedAt:
+                    type: 'number'
+                    example: 1747326023915
+        ContactsResponse:
+            type: object
+            properties:
+                contacts:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ContactResponse'
+        InvalidContactIDResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: 'Contact ID is invalid.'
+        ContactNotFoundResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: 'Contact not found.'
         ServerErrorResponse:
             type: object
             properties:
                 message:
                     type: string
                     example: 'Something went wrong.'
+        UnauthorisedResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+                    example: 'An access token is required.'
         InvalidCredentialsResponse:
             type: object
             properties:
