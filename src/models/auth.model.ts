@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 
 import User from '../db/models/User';
 
-import { UserDto, UserDocument } from '../types/auth';
+import { UserDto, UserSession, UserDocument } from '../types/auth';
 
 const JWT_SECRET: string = process.env.JWT_SECRET!;
 
@@ -35,7 +35,10 @@ const getToken = (userId: string): string => {
 	return token;
 };
 
-const logInUser = async (email: string, password: string): Promise<UserDto> => {
+const logInUser = async (
+	email: string,
+	password: string
+): Promise<UserSession> => {
 	const userDocument = await getUserDocument(email);
 	if (!userDocument) {
 		console.error(`[authModel: logInUser] No user found.`);
@@ -49,7 +52,8 @@ const logInUser = async (email: string, password: string): Promise<UserDto> => {
 	}
 
 	const user = formatUserData(userDocument);
-	return user;
+	const token = getToken(user.id);
+	return { token, user };
 };
 
 const generateHashedPassword = async (password: string): Promise<string> => {
@@ -58,11 +62,11 @@ const generateHashedPassword = async (password: string): Promise<string> => {
 	return hashedPassword;
 };
 
-const createUser = async (
+const registerUser = async (
 	name: string,
 	email: string,
 	password: string
-): Promise<UserDto> => {
+): Promise<UserSession> => {
 	try {
 		const hashedPassword = await generateHashedPassword(password);
 		console.log('[authModel: createUser] Storing user in database...');
@@ -74,11 +78,12 @@ const createUser = async (
 		await userDocument.save();
 		console.log('[authModel: createUser] User saved.');
 		const user = formatUserData(userDocument);
-		return user;
+		const token = getToken(user.id);
+		return { token, user };
 	} catch (error: any) {
 		console.error(`[authModel: createUser] ${error.message}`);
 		throw error;
 	}
 };
 
-export { userExists, getToken, logInUser, createUser };
+export { userExists, logInUser, registerUser };

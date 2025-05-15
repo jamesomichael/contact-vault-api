@@ -27,3 +27,8 @@ export interface UserDocument extends Document {
 	password: string;
 	createdAt: number;
 }
+
+export interface UserSession {
+	token: string;
+	user: UserDto;
+}
