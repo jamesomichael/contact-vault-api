@@ -19,8 +19,12 @@ const ContactSchema = new mongoose.Schema({
 		type: String,
 		default: 'personal',
 	},
-	date: {
-		type: Date,
+	createdAt: {
+		type: Number,
+		default: Date.now,
+	},
+	updatedAt: {
+		type: Number,
 		default: Date.now,
 	},
 });

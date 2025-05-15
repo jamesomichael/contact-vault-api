@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+import dayjs from 'dayjs';
 
 import { AuthorisedRequest } from '../types/auth';
 
@@ -27,6 +28,7 @@ const createContact: RequestHandler = async (req, res): Promise<void> => {
 			email,
 			phoneNumber,
 			type,
+			createdAt: contact.createdAt,
 		});
 	} catch (error: any) {
 		console.error(`[contactsController: createContact] ${error.message}`);
@@ -42,13 +44,14 @@ const fetchContacts: RequestHandler = async (req, res): Promise<void> => {
 		);
 		const contacts = await Contact.find({ userId }).sort({ date: -1 });
 		const formattedContacts = contacts.map(
-			({ id, name, email, phoneNumber, type, date }) => ({
+			({ id, name, email, phoneNumber, type, createdAt, updatedAt }) => ({
 				id,
 				name,
 				email,
 				phoneNumber,
 				type,
-				date,
+				createdAt,
+				updatedAt,
 			})
 		);
 		console.log('[contactsController: fetchContacts] Contacts retrieved.');
@@ -95,7 +98,8 @@ const fetchContactById: RequestHandler = async (req, res): Promise<void> => {
 			email: contact.email,
 			phoneNumber: contact.phoneNumber,
 			type: contact.type,
-			date: contact.date,
+			createdAt: contact.createdAt,
+			updatedAt: contact.updatedAt,
 		});
 	} catch (error: any) {
 		console.error(
@@ -124,7 +128,7 @@ const updateContact: RequestHandler = async (req, res): Promise<void> => {
 
 		const contact = await Contact.findOneAndUpdate(
 			{ _id: id, userId },
-			updates,
+			{ ...updates, updatedAt: dayjs().valueOf() },
 			{ new: true }
 		);
 
@@ -144,7 +148,8 @@ const updateContact: RequestHandler = async (req, res): Promise<void> => {
 			email: contact.email,
 			phoneNumber: contact.phoneNumber,
 			type: contact.type,
-			date: contact.date,
+			createdAt: contact.createdAt,
+			updatedAt: contact.updatedAt,
 		});
 	} catch (error: any) {
 		console.error(`[contactsController: updateContact] ${error.message}`);

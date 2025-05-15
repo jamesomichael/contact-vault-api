@@ -31,7 +31,12 @@ const register: RequestHandler = async (req, res): Promise<void> => {
 		const token = getToken(user.id);
 		res.status(200).json({
 			token,
-			user: { id: user.id, name: user.name, email: user.email },
+			user: {
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				createdAt: user.createdAt,
+			},
 		});
 	} catch (error: any) {
 		console.error(`[authController: register] ${error.message}`);
@@ -61,7 +66,12 @@ const login: RequestHandler = async (req, res): Promise<void> => {
 		const token = getToken(user.id);
 		res.status(200).json({
 			token,
-			user: { id: user.id, name: user.name, email: user.email },
+			user: {
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				createdAt: user.createdAt,
+			},
 		});
 	} catch (error: any) {
 		console.error(`[authController: login] ${error.message}`);
