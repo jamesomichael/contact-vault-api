@@ -9,6 +9,7 @@ export interface CreateContactDto {
 	type: ContactType;
 }
 
+export type UpdateContactDto = Partial<CreateContactDto>;
 export interface ContactDocument extends Document {
 	name: string;
 	email?: string | null | undefined;
