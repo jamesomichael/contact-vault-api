@@ -3,33 +3,18 @@ import dayjs from 'dayjs';
 
 import { AuthorisedRequest } from '../types/auth';
 
-import { isValidObjectId } from '../models/contacts.model';
+import * as contactsModel from '../models/contacts.model';
 import Contact from '../db/models/Contact';
 
 const createContact: RequestHandler = async (req, res): Promise<void> => {
 	const { name, email, phoneNumber, type } = req.body;
 	const userId = (req as AuthorisedRequest).user.id;
 	try {
-		console.log(
-			`[contactsController: createContact] Creating contact for user ${userId}...`
+		const contact = await contactsModel.createContact(
+			{ name, email, phoneNumber, type },
+			userId
 		);
-		const contact = new Contact({
-			name,
-			email,
-			phoneNumber,
-			type,
-			userId,
-		});
-		await contact.save();
-		console.log('[contactsController: createContact] Contact created.');
-		res.status(200).json({
-			id: contact.id,
-			name,
-			email,
-			phoneNumber,
-			type,
-			createdAt: contact.createdAt,
-		});
+		res.status(200).json(contact);
 	} catch (error: any) {
 		console.error(`[contactsController: createContact] ${error.message}`);
 		res.status(500).json({ message: 'Something went wrong.' });
@@ -39,23 +24,8 @@ const createContact: RequestHandler = async (req, res): Promise<void> => {
 const fetchContacts: RequestHandler = async (req, res): Promise<void> => {
 	const userId = (req as AuthorisedRequest).user.id;
 	try {
-		console.log(
-			`[contactsController: fetchContacts] Fetching all contacts for user ${userId}...`
-		);
-		const contacts = await Contact.find({ userId }).sort({ date: -1 });
-		const formattedContacts = contacts.map(
-			({ id, name, email, phoneNumber, type, createdAt, updatedAt }) => ({
-				id,
-				name,
-				email,
-				phoneNumber,
-				type,
-				createdAt,
-				updatedAt,
-			})
-		);
-		console.log('[contactsController: fetchContacts] Contacts retrieved.');
-		res.status(200).json({ contacts: formattedContacts });
+		const contacts = await contactsModel.getContacts(userId);
+		res.status(200).json({ contacts });
 	} catch (error: any) {
 		console.error(`[contactsController: fetchContacts] ${error.message}`);
 		res.status(500).json({ message: 'Something went wrong.' });
@@ -70,7 +40,7 @@ const fetchContactById: RequestHandler = async (req, res): Promise<void> => {
 			`[contactsController: fetchContactById] Fetching contact ${id} for user ${userId}...`
 		);
 
-		if (!isValidObjectId(id)) {
+		if (!contactsModel.isValidObjectId(id)) {
 			console.error(
 				'[contactsController: fetchContactById] The contact ID is invalid.'
 			);
@@ -118,7 +88,7 @@ const updateContact: RequestHandler = async (req, res): Promise<void> => {
 			`[contactsController: updateContact] Updating contact ${id} for user ${userId}...`
 		);
 
-		if (!isValidObjectId(id)) {
+		if (!contactsModel.isValidObjectId(id)) {
 			console.error(
 				'[contactsController: updateContact] The contact ID is invalid.'
 			);
@@ -165,7 +135,7 @@ const deleteContact: RequestHandler = async (req, res): Promise<void> => {
 			`[contactsController: deleteContact] Deleting contact ${id} for user ${userId}...`
 		);
 
-		if (!isValidObjectId(id)) {
+		if (!contactsModel.isValidObjectId(id)) {
 			console.error(
 				'[contactsController: deleteContact] The contact ID is invalid.'
 			);
