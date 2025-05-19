@@ -17,6 +17,7 @@ const ContactSchema = new mongoose.Schema({
 	},
 	type: {
 		type: String,
+		enum: ['personal', 'business'],
 		default: 'personal',
 	},
 	createdAt: {
