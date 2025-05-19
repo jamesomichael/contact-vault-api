@@ -3,7 +3,6 @@ import authController from '../../src/controllers/auth.controller';
 import * as authModel from '../../src/models/auth.model';
 
 jest.mock('../../src/models/auth.model');
-jest.mock('../../src/db/models/User');
 
 describe('auth.controller', () => {
 	let req: Partial<Request> = { body: {} };
