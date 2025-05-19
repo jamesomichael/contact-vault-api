@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import dayjs from 'dayjs';
 
 import Contact from '../db/models/Contact';
 
@@ -6,6 +7,7 @@ import {
 	ContactDocument,
 	ContactDto,
 	CreateContactDto,
+	UpdateContactDto,
 } from '../types/contact';
 
 const isValidObjectId = (id: string): boolean => mongoose.isValidObjectId(id);
@@ -60,4 +62,64 @@ const getContacts = async (userId: string): Promise<ContactDto[]> => {
 	return contacts;
 };
 
-export { isValidObjectId, createContact, getContacts };
+const getContactById = async (
+	id: string,
+	userId: string
+): Promise<ContactDto> => {
+	console.log(
+		`[contactsModel: getContactById] Fetching contact ${id} for user ${userId}...`
+	);
+	const contactDocument = await Contact.findOne({ _id: id, userId });
+	if (!contactDocument) {
+		console.error(
+			'[contactsModel: getContactById] Contact does not exist.'
+		);
+		throw new Error('Contact not found.');
+	}
+	const contact = formatContactData(contactDocument);
+	console.error('[contactsModel: getContactById] Contact retrieved.');
+	return contact;
+};
+
+const updateContact = async (
+	updates: UpdateContactDto,
+	id: string,
+	userId: string
+): Promise<ContactDto> => {
+	console.log(
+		`[contactsModel: updateContact] Updating contact ${id} for user ${userId}...`
+	);
+	const contactDocument = await Contact.findOneAndUpdate(
+		{ _id: id, userId },
+		{ ...updates, updatedAt: dayjs().valueOf() },
+		{ new: true }
+	);
+	if (!contactDocument) {
+		console.error('[contactsModel: updateContact] Contact does not exist.');
+		throw new Error('Contact not found.');
+	}
+	const contact = formatContactData(contactDocument);
+	console.error('[contactsModel: updateContact] Contact updated.');
+	return contact;
+};
+
+const deleteContact = async (id: string, userId: string): Promise<void> => {
+	console.log(
+		`[contactsModel: deleteContact] Deleting contact ${id} for user ${userId}...`
+	);
+	const contactDocument = await Contact.findOneAndDelete({ _id: id, userId });
+	if (!contactDocument) {
+		console.error('[contactsModel: deleteContact] Contact does not exist.');
+		throw new Error('Contact not found.');
+	}
+	console.error('[contactsModel: deleteContact] Contact deleted.');
+};
+
+export {
+	isValidObjectId,
+	createContact,
+	getContacts,
+	getContactById,
+	updateContact,
+	deleteContact,
+};
