@@ -103,7 +103,7 @@ const updateContact = async (
 	return contact;
 };
 
-const deleteContact = async (id: string, userId: string): Promise<void> => {
+const deleteContact = async (id: string, userId: string): Promise<boolean> => {
 	console.log(
 		`[contactsModel: deleteContact] Deleting contact ${id} for user ${userId}...`
 	);
@@ -113,6 +113,7 @@ const deleteContact = async (id: string, userId: string): Promise<void> => {
 		throw new Error('Contact not found.');
 	}
 	console.error('[contactsModel: deleteContact] Contact deleted.');
+	return true;
 };
 
 export {
