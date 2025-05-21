@@ -80,8 +80,10 @@ const registerUser = async (
 		const user = formatUserData(userDocument);
 		const token = getToken(user.id);
 		return { token, user };
-	} catch (error: any) {
-		console.error(`[authModel: createUser] ${error.message}`);
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			console.error(`[authModel: createUser] ${error.message}`);
+		}
 		throw error;
 	}
 };

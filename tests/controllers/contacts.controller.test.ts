@@ -7,7 +7,7 @@ import { AuthorisedRequest } from '../../src/types/auth';
 jest.mock('../../src/models/contacts.model');
 
 describe('contacts.controller', () => {
-	let req: Partial<Request> = { body: {} };
+	const req: Partial<Request> = { body: {} };
 	let res: Partial<Response>;
 	let next: Partial<NextFunction>;
 	let statusMock: jest.Mock;

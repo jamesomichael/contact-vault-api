@@ -1,4 +1,4 @@
-const { Joi } = require('celebrate');
+import { Joi } from 'celebrate';
 
 const register = {
 	body: Joi.object()

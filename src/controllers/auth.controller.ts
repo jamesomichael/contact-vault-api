@@ -16,8 +16,10 @@ const register: RequestHandler = async (req, res): Promise<void> => {
 
 		const { user, token } = await registerUser(name, email, password);
 		res.status(200).json({ token, user });
-	} catch (error: any) {
-		console.error(`[authController: register] ${error.message}`);
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			console.error(`[authController: register] ${error.message}`);
+		}
 		res.status(500).json({ message: 'Something went wrong.' });
 	}
 };
@@ -30,11 +32,13 @@ const login: RequestHandler = async (req, res): Promise<void> => {
 		);
 		const { user, token } = await logInUser(email, password);
 		res.status(200).json({ token, user });
-	} catch (error: any) {
-		console.error(`[authController: login] ${error.message}`);
-		if (/Invalid credentials/.test(error.message)) {
-			res.status(401).json({ message: error.message });
-			return;
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			console.error(`[authController: login] ${error.message}`);
+			if (/Invalid credentials/.test(error.message)) {
+				res.status(401).json({ message: error.message });
+				return;
+			}
 		}
 		res.status(500).json({ message: 'Something went wrong.' });
 	}

@@ -5,7 +5,7 @@ import * as authModel from '../../src/models/auth.model';
 jest.mock('../../src/models/auth.model');
 
 describe('auth.controller', () => {
-	let req: Partial<Request> = { body: {} };
+	const req: Partial<Request> = { body: {} };
 	let res: Partial<Response>;
 	let next: Partial<NextFunction>;
 	let statusMock: jest.Mock;
