@@ -1,6 +1,6 @@
 {
 	"name": "contact-vault-api",
-	"description": "",
+	"description": "Manage your contacts with ease. A RESTful API built with Node.js, Express, TypeScript, and MongoDB.",
 	"version": "1.0.0",
 	"main": "src/server.ts",
 	"scripts": {
